@@ -1,5 +1,5 @@
 <svg version="1.1" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-  <g stroke="lightgray" stroke-dasharray="1,1" stroke-width="1" transform="scale(4, 4)">
+  <g stroke="black" stroke-dasharray="1,1" stroke-width="1" transform="scale(4, 4)">
     <line x1="0" y1="0" x2="256" y2="256"></line>
     <line x1="256" y1="0" x2="0" y2="256"></line>
     <line x1="128" y1="0" x2="128" y2="256"></line>
@@ -56,9 +56,9 @@
       
     </style>
     
-      <path d="M 364 648 Q 394 644 429 650 Q 586 675 751 701 Q 826 716 837 725 Q 849 734 843 745 Q 836 761 799 771 Q 763 781 666 751 Q 498 709 337 697 L 364 648 Z" fill="lightgray"></path>
+      <path d="M 364 648 Q 394 644 429 650 Q 586 675 751 701 Q 826 716 837 725 Q 849 734 843 745 Q 836 761 799 771 Q 763 781 666 751 Q 498 709 337 697 L 364 648 Z" fill="black"></path>
     
-      <path d="M 337 697 Q 292 727 262 718 Q 240 709 257 690 Q 288 657 288 623 Q 289 472 270 371 Q 237 178 109 54 Q 94 41 77 24 Q 64 15 61 11 Q 57 4 75 4 Q 111 4 204 90 Q 297 184 334 399 Q 343 466 349 566 Q 350 605 364 648 L 337 697 Z" fill="lightgray"></path>
+      <path d="M 337 697 Q 292 727 262 718 Q 240 709 257 690 Q 288 657 288 623 Q 289 472 270 371 Q 237 178 109 54 Q 94 41 77 24 Q 64 15 61 11 Q 57 4 75 4 Q 111 4 204 90 Q 297 184 334 399 Q 343 466 349 566 Q 350 605 364 648 L 337 697 Z" fill="black"></path>
     
     
       <clipPath id="make-me-a-hanzi-clip-0">

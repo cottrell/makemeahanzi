@@ -1,5 +1,5 @@
 <svg version="1.1" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-  <g stroke="lightgray" stroke-dasharray="1,1" stroke-width="1" transform="scale(4, 4)">
+  <g stroke="black" stroke-dasharray="1,1" stroke-width="1" transform="scale(4, 4)">
     <line x1="0" y1="0" x2="256" y2="256"></line>
     <line x1="256" y1="0" x2="0" y2="256"></line>
     <line x1="128" y1="0" x2="128" y2="256"></line>
@@ -33,7 +33,7 @@
       
     </style>
     
-      <path d="M 387 680 Q 463 595 550 475 Q 566 450 582 443 Q 592 440 601 451 Q 617 464 609 515 Q 600 587 393 715 Q 383 722 379 708 Q 376 693 387 680 Z" fill="lightgray"></path>
+      <path d="M 387 680 Q 463 595 550 475 Q 566 450 582 443 Q 592 440 601 451 Q 617 464 609 515 Q 600 587 393 715 Q 383 722 379 708 Q 376 693 387 680 Z" fill="black"></path>
     
     
       <clipPath id="make-me-a-hanzi-clip-0">
