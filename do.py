@@ -1,4 +1,5 @@
 import glob
+import bcolz
 import numpy as np
 import multiprocessing
 import os
@@ -43,4 +44,7 @@ def make_np_data(newsize=32):
     a = np.empty((m, n), dtype=np.uint8)
     for x in res:
         a[i,:] = x.get()
+    filename = 'array_{}.bcolz'.format(newsize)
+    print('saving {}'.format(filename))
+    bcolz.carray(a, rootdir=filename)
     return a
