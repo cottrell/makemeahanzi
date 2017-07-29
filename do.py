@@ -25,13 +25,15 @@ def makepng():
     for x in res:
         x.get()
 
-def _makearray(f, newsize=32):
+_default_size = 32
+
+def _makearray(f, newsize=_default_size):
     print(f)
     im = PIL.Image.open(f)
     im = im.resize((newsize, newsize))
     return np.fromstring(im.tobytes(), dtype=np.uint8)
 
-def make_np_data(newsize=32):
+def make_np_data(newsize=_default_size):
     files = glob.glob('png/*.png')
     pool = multiprocessing.Pool()
     res = list()
@@ -48,3 +50,5 @@ def make_np_data(newsize=32):
     print('saving {}'.format(filename))
     bcolz.carray(a, rootdir=filename)
     return a
+
+
