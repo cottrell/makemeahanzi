@@ -75,20 +75,23 @@ def ae():
     from keras.layers import Input, Dense
     from keras.models import Model
     input_dim = data.shape[1] * data.shape[2]
-    encoding_dim = 32  # 32 floats -> compression of factor 1024 / 32 = 32, assuming the input is input_dim floats
     input_img = Input(shape=(input_dim,))
 
     params = dict(
             input_dim=input_dim,
             encoder=[
                 (128, 'relu'),
-                (32, 'relu')
+                (64, 'relu'),
+                (32, 'relu'),
                 ],
             decoder=[
+                (32, 'relu'),
                 (64, 'relu'),
+                (128, 'relu'),
                 (input_dim, 'sigmoid')
                 ]
             )
+    encoding_dim = params['encoder'][-1][0] # 32 floats -> compression of factor 1024 / 32 = 32, assuming the input is input_dim floats
 
     encoded = input_img
     for s, t in params['encoder']:
@@ -101,15 +104,13 @@ def ae():
 
     autoencoder = Model(input_img, decoded)
     encoder = Model(input_img, encoded)
-
     # create a placeholder for an encoded (32-dimensional) input
     encoded_input = Input(shape=(encoding_dim,))
     deco = encoded_input
     for i in range(-len(params['decoder']), 0):
-        print('here', i)
         deco = autoencoder.layers[i](deco)
-    # create the decoder model
     decoder = Model(encoded_input, deco)
+
     autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
     import numpy as np
