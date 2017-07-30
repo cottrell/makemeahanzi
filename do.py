@@ -104,8 +104,13 @@ def ae():
 
     # create a placeholder for an encoded (32-dimensional) input
     encoded_input = Input(shape=(encoding_dim,))
-    deco = autoencoder.layers[-2](encoded_input)
+    deco = encoded_input
+    deco = autoencoder.layers[-2](deco)
     deco = autoencoder.layers[-1](deco)
+    # print(len(params['decoder']))
+    # for i in range(-len(params['decoder']), 0):
+    #     print('here', i)
+    #     deco = autoencoder.layers[-i](deco)
     # create the decoder model
     decoder = Model(encoded_input, deco)
     autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
