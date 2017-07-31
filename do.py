@@ -80,6 +80,8 @@ def ae():
     params = dict(
             input_dim=input_dim,
             encoder=[
+                (512, 'relu'),
+                (256, 'relu'),
                 (128, 'relu'),
                 (64, 'relu'),
                 (32, 'relu'),
@@ -88,6 +90,8 @@ def ae():
                 (32, 'relu'),
                 (64, 'relu'),
                 (128, 'relu'),
+                (256, 'relu'),
+                (512, 'relu'),
                 (input_dim, 'sigmoid')
                 ]
             )
