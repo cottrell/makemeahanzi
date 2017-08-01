@@ -1,4 +1,5 @@
 import glob
+import tempfile
 import shutil
 import bcolz
 import numpy as np
@@ -7,6 +8,10 @@ import os
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 import PIL
+from keras.layers import Input, Dense
+from keras.models import Model, load_model
+
+_script_dir = os.path.dirname(os.path.realpath(__file__))
 
 def _makepng(f):
     r = svg2rlg(f)
@@ -69,13 +74,33 @@ def _make_str(d):
     f = lambda x: '|'.join(map(g, x))
     return 'input_dim={}&encoder={}&decoder={}'.format(d['input_dim'], f(d['encoder']), f(d['decoder']))
 
+class ModelWriter():
+    # make a class to be careful to not lose long running files, ugh. could just not delete
+    def __init__(self, filename):
+        self.cleanup_on_success = True
+        self.filename = filename
+    def exists(self):
+        return os.path.exists(self.filename)
+    def load(self):
+        return load_model(self.filename)
+    def save(self, model):
+        temp = tempfile.mktemp(prefix=self.filename + '.tmp.')
+        try:
+            if os.path.exists(self.filename):
+                shutil.move(self.filename, temp)
+            print('writing {}'.format(self.filename))
+            model.save(self.filename)
+        except Exception as e:
+            print('caught exception, moving file {} back to {}'.format(temp, self.filename))
+            shutil.move(temp, self.filename)
+            raise e
+        if self.cleanup_on_success:
+            os.remove(temp)
+
 def ae():
     data = load()
     data = data[:]
-    from keras.layers import Input, Dense
-    from keras.models import Model
     input_dim = data.shape[1] * data.shape[2]
-    input_img = Input(shape=(input_dim,))
 
     params = dict(
             input_dim=input_dim,
@@ -97,25 +122,41 @@ def ae():
             )
     encoding_dim = params['encoder'][-1][0] # 32 floats -> compression of factor 1024 / 32 = 32, assuming the input is input_dim floats
 
+    mpath = os.path.join(_script_dir, 'models')
+    if not os.path.exists(mpath):
+        os.makedirs(mpath)
+    fbase = os.path.join(mpath, _make_str(params))
+
+    input_img = Input(shape=(input_dim,))
     encoded = input_img
-    for s, t in params['encoder']:
-        encoded = Dense(s, activation=t)(encoded)
+    modelwriter = ModelWriter("{}_{}.h5".format(fbase, 'autoencoder'))
+    if modelwriter.exists():
+        autoencoder = modelwriter.load()
+    else:
+        print('fresh autoencoder, will save to {}'.format(modelwriter.filename))
+        for s, t in params['encoder']:
+            encoded = Dense(s, activation=t)(encoded)
+        decoded = encoded
+        for s, t in params['decoder']:
+            decoded = Dense(s, activation=t)(decoded)
+
+        autoencoder = Model(input_img, decoded)
+        modelwriter.save(autoencoder)
+
+    autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy') # dunno, can we do this here and recompile as necessary?
+
     # https://stackoverflow.com/questions/44472693/how-to-decode-encoded-data-from-deep-autoencoder-in-keras-unclarity-in-tutorial
-
-    decoded = encoded
-    for s, t in params['decoder']:
-        decoded = Dense(s, activation=t)(decoded)
-
-    autoencoder = Model(input_img, decoded)
-    encoder = Model(input_img, encoded)
+    # just pull the layers from the autoencoder so it works in both the load preload case
+    enco = input_img
+    for i in range(len(params['encoder'])):
+        enco = autoencoder.layers[i+1](enco)
+    encoder = Model(input_img, enco)
     # create a placeholder for an encoded (32-dimensional) input
     encoded_input = Input(shape=(encoding_dim,))
     deco = encoded_input
     for i in range(-len(params['decoder']), 0):
         deco = autoencoder.layers[i](deco)
     decoder = Model(encoded_input, deco)
-
-    autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
     import numpy as np
     import sklearn.model_selection as ms
@@ -128,7 +169,8 @@ def ae():
     print(x_train.shape)
     print(x_test.shape)
 
-    autoencoder.fit(x_train, x_train, epochs=100, batch_size=256, shuffle=True, validation_data=(x_test, x_test))
+    autoencoder.fit(x_train, x_train, epochs=1000, batch_size=256 * 4, shuffle=True, validation_data=(x_test, x_test))
+    modelwriter.save(autoencoder)
 
     # encode and decode some digits
     # note that we take them from the *test* set
