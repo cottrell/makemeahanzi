@@ -1,4 +1,5 @@
 import glob
+import json
 import tempfile
 import shutil
 import bcolz
@@ -12,6 +13,16 @@ from keras.layers import Input, Dense
 from keras.models import Model, load_model
 
 _script_dir = os.path.dirname(os.path.realpath(__file__))
+
+def getdict():
+  characters = {}
+  with open('dictionary.txt') as f:
+    for line in f.readlines():
+      if not line:
+        continue
+      data = json.loads(line.strip())
+      characters[data['character']] = data
+    return characters
 
 def _makepng(f):
     r = svg2rlg(f)
